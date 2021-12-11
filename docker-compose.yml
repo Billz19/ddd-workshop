@@ -59,6 +59,8 @@ services:
       dockerfile: ./docker/php/Dockerfile
     volumes:
       - .:/var/www/html:delegated
+    env_file:
+      - .env.testing.docker
     depends_on:
       - arangodb
     working_dir: /var/www/html
