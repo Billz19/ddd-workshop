@@ -1,0 +1,67 @@
+version: '3.7'
+
+networks:
+  laravel-api:
+    driver: bridge
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - "8191:80"
+    volumes:
+      - .:/var/www/html:delegated
+    depends_on:
+      - php
+    networks:
+      - laravel-api
+
+  arangodb:
+      image: arangodb:latest
+      restart: unless-stopped
+      tty: true
+      environment:
+          ARANGO_ROOT_PASSWORD: secret
+      ports:
+          - 8630:8529
+      volumes:
+          - ./docker/arangodb/data:/var/lib/arangodb
+      networks:
+          - laravel-api
+
+  php:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    volumes:
+      - .:/var/www/html
+    networks:
+      - laravel-api
+
+  composer:
+    build:
+      context: .
+      dockerfile: ./docker/php/composer/Dockerfile
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - php
+    networks:
+      - laravel-api
+    entrypoint: ['composer', '--ignore-platform-reqs']
+
+  artisan:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    volumes:
+      - .:/var/www/html:delegated
+    depends_on:
+      - arangodb
+    working_dir: /var/www/html
+    entrypoint: ['php', '/var/www/html/artisan']
+    networks:
+      - laravel-api
