@@ -3,7 +3,7 @@
 
 namespace Tests\Helpers;
 
-use App\Packages\User\Repository\Arango\UserArangoDbInitializer;
+use App\Packages\Users\Repository\Arango\UserArangoDbInitializer;
 
 trait ArangoUserInitDbTrait
 {

@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+
+use App\Library\ArangoDb\ArangoDbInitializerCollection;
+use App\Packages\Users\Repository\Arango\UserArangoDbInitializer;
+use ArangoDBClient\Connection as ArangoConnection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +18,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // binding connection to @ArangodbConnection
+        $this->app->bind(ArangoConnection::class, function() {
+            return new ArangoConnection(Config::get('database.connections.arangodb'));
+        });
+
+        //bind arangoDbInitializer classes to ArangoDbInitializerCollection
+        $this->app->bind(ArangoDbInitializerCollection::class, function () {
+            return new ArangoDbInitializerCollection(
+                app()->make(UserArangoDbInitializer::class),
+            );
+        });
     }
 
     /**

@@ -1,69 +1,85 @@
 version: '3.7'
 
 networks:
-  laravel-api:
-    driver: bridge
+    laravel-api:
+        driver: bridge
 
 services:
-  nginx:
-    build:
-      context: .
-      dockerfile: ./docker/nginx/Dockerfile
-    ports:
-      - "8191:80"
-    volumes:
-      - .:/var/www/html:delegated
-    depends_on:
-      - php
-    networks:
-      - laravel-api
+    nginx:
+        build:
+            context: .
+            dockerfile: ./docker/nginx/Dockerfile
+        ports:
+            - "8191:80"
+        volumes:
+            - .:/var/www/html:delegated
+        depends_on:
+            - php
+        networks:
+            - laravel-api
 
-  arangodb:
-      image: arangodb:latest
-      restart: unless-stopped
-      tty: true
-      environment:
-          ARANGO_ROOT_PASSWORD: secret
-      ports:
-          - 8630:8529
-      volumes:
-          - ./docker/arangodb/data:/var/lib/arangodb
-      networks:
-          - laravel-api
+    mysql:
+        image: mysql:5.7.29
+        restart: unless-stopped
+        tty: true
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ROOT_PASSWORD: secret
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - ./docker/mysql/data:/var/lib/mysql/
+        networks:
+            - laravel-api
 
-  php:
-    build:
-      context: .
-      dockerfile: ./docker/php/Dockerfile
-    volumes:
-      - .:/var/www/html
-    networks:
-      - laravel-api
+    arangodb:
+        image: arangodb:latest
+        restart: unless-stopped
+        tty: true
+        environment:
+            ARANGO_ROOT_PASSWORD: secret
+        ports:
+            - 8630:8529
+        volumes:
+            - ./docker/arangodb/data:/var/lib/arangodb
+        networks:
+            - laravel-api
 
-  composer:
-    build:
-      context: .
-      dockerfile: ./docker/php/composer/Dockerfile
-    volumes:
-      - .:/var/www/html
-    working_dir: /var/www/html
-    depends_on:
-      - php
-    networks:
-      - laravel-api
-    entrypoint: ['composer', '--ignore-platform-reqs']
+    php:
+        build:
+            context: .
+            dockerfile: ./docker/php/Dockerfile
+        volumes:
+            - .:/var/www/html
+        networks:
+            - laravel-api
 
-  artisan:
-    build:
-      context: .
-      dockerfile: ./docker/php/Dockerfile
-    volumes:
-      - .:/var/www/html:delegated
-    env_file:
-      - .env.testing.docker
-    depends_on:
-      - arangodb
-    working_dir: /var/www/html
-    entrypoint: ['php', '/var/www/html/artisan']
-    networks:
-      - laravel-api
+    composer:
+        build:
+            context: .
+            dockerfile: ./docker/php/composer/Dockerfile
+        volumes:
+            - .:/var/www/html
+        working_dir: /var/www/html
+        depends_on:
+            - php
+        networks:
+            - laravel-api
+        entrypoint: [ 'composer', '--ignore-platform-reqs' ]
+
+    artisan:
+        build:
+            context: .
+            dockerfile: ./docker/php/Dockerfile
+        volumes:
+            - .:/var/www/html:delegated
+        env_file:
+            - .env.testing.docker
+        depends_on:
+            - arangodb
+        working_dir: /var/www/html
+        entrypoint: [ 'php', '/var/www/html/artisan' ]
+        networks:
+            - laravel-api
