@@ -25,13 +25,12 @@ class GetPostsController extends Controller
     public function __invoke(Request $request)
     {
         try {
-            $authUserId = auth()->user()->getId();
             $query = PostsQuery::fromArray([
                 'page' => $request->get('page', 1),
                 'perPage' => $request->get('per_page', 20),
             ]);
 
-            $posts = $this->postService->getPosts($query, $authUserId);
+            $posts = $this->postService->getPosts($query);
             return response()
                 ->json($posts, Response::HTTP_OK)
                 ->withHeaders($this->getHeaders($query));
@@ -52,7 +51,8 @@ class GetPostsController extends Controller
             'X-Next-Page'   => $postsQuery->getNextPage(),
             'X-Prev-Page'   => $postsQuery->getPrevPage(),
             'X-Page'        => $postsQuery->getPage(),
-            'X-Total'       => $postsQuery->getTotal()
+            'X-Total'       => $postsQuery->getTotal(),
+            'Access-Control-Expose-Headers' => '*'
         ];
     }
 }

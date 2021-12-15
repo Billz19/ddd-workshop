@@ -21,8 +21,7 @@ class GetPostController extends Controller
     public function __invoke(string $postId)
     {
         try {
-            $authUserId = auth()->user()->getId();
-            $result = $this->postService->getPost($postId, $authUserId);
+            $result = $this->postService->getPost($postId);
             return response()->json($result, Response::HTTP_OK);
         } catch (ResourceNotFoundError $e) {
             throw new NotFoundError(error: $e->getMessage(), previous: $e);

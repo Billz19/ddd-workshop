@@ -22,12 +22,14 @@ class PostService implements PostServiceInterface
     public function createPost(Post $post): Post
     {
         $post->validate(Post::$OPERATION_POST);
+        $post->setCreatedAt();
         return $this->postRepository->createPost($post);
     }
 
     public function updatePost(Post $post): Post
     {
         $post->validate(Post::$OPERATION_PUT);
+        $post->setUpdatedAt();
         return $this->postRepository->updatePost($post);
     }
 
@@ -36,15 +38,15 @@ class PostService implements PostServiceInterface
         $this->postRepository->deletePost($postId);
     }
 
-    public function getPost(string $postId, string $authUserId): Post
+    public function getPost(string $postId): Post
     {
-        return $this->postRepository->getPost($postId, $authUserId);
+        return $this->postRepository->getPost($postId);
     }
 
-    public function getPosts(PostsQuery $postsQuery, string $authUserId): PostCollection
+    public function getPosts(PostsQuery $postsQuery): PostCollection
     {
-        $count = $this->postRepository->getPostsCount($authUserId);
+        $count = $this->postRepository->getPostsCount();
         $postsQuery->configurePagination($count);
-        return $this->postRepository->getPosts($postsQuery, $authUserId);
+        return $this->postRepository->getPosts($postsQuery);
     }
 }

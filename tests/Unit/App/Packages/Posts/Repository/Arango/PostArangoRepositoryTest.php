@@ -102,17 +102,14 @@ class PostArangoRepositoryTest extends TestCase
     {
         $conn = $this->createDatabase();
         $arangoRepository = new PostArangoRepository($conn);
-        $userId = uniqid();
         $count = 3;
-        $posts = [];
 
         for ($i = 0; $i < $count; $i++) {
             $post = PostFixture::newPost(withId: true);
-            $post->setCreator($userId);
-            $posts[] = $arangoRepository->createPost($post)->toArray();
+            $arangoRepository->createPost($post);
         }
 
-        $result = $arangoRepository->getPostsCount($userId);
+        $result = $arangoRepository->getPostsCount();
 
         $this->assertEqualsCanonicalizing($count, $result);
     }
@@ -126,19 +123,17 @@ class PostArangoRepositoryTest extends TestCase
     {
         $conn = $this->createDatabase();
         $arangoRepository = new PostArangoRepository($conn);
-        $userId = uniqid();
         $count = 3;
         $posts = [];
 
         for ($i = 0; $i < $count; $i++) {
             $post = PostFixture::newPost(withId: true);
-            $post->setCreator($userId);
             $posts[] = $arangoRepository->createPost($post)->toArray();
         }
         $postsQuery = PostsQuery::fromArray(['page' => 1, 'perPage' => 20]);
         $postsQuery->configurePagination($count);
 
-        $result = $arangoRepository->getPosts($postsQuery, $userId);
+        $result = $arangoRepository->getPosts($postsQuery);
 
         $this->assertEqualsCanonicalizing(new PostCollection($posts), $result);
     }
@@ -153,11 +148,10 @@ class PostArangoRepositoryTest extends TestCase
         $this->expectException(UnknownDBErrorException::class);
 
         $arangoRepository = $this->newRepositoryWithInvalidConnection();
-        $userId = uniqid();
         $postsQuery = PostsQuery::fromArray(['page' => 1, 'perPage' => 20]);
         $postsQuery->configurePagination(3);
 
-        $arangoRepository->getPostsCount($userId);
+        $arangoRepository->getPosts($postsQuery);
     }
 
     /**
@@ -169,13 +163,11 @@ class PostArangoRepositoryTest extends TestCase
     {
         $conn = $this->createDatabase();
         $arangoRepository = new PostArangoRepository($conn);
-        $userId = uniqid();
         $post = PostFixture::newPost();
-        $post->setCreator($userId);
 
         $post = $arangoRepository->createPost($post);
 
-        $result = $arangoRepository->getPost($post->getId(), $userId);
+        $result = $arangoRepository->getPost($post->getId());
 
         $this->assertEqualsCanonicalizing($post, $result);
     }
@@ -191,7 +183,7 @@ class PostArangoRepositoryTest extends TestCase
         $conn = $this->createDatabase();
         $arangoRepository = new PostArangoRepository($conn);
 
-        $arangoRepository->getPost('not_found_post', 'authUserId');
+        $arangoRepository->getPost('not_found_post');
 
     }
 
@@ -205,7 +197,7 @@ class PostArangoRepositoryTest extends TestCase
         $this->expectException(UnknownDBErrorException::class);
         $arangoRepository = $this->newRepositoryWithInvalidConnection();
 
-        $arangoRepository->getPost('post_id', 'authUserId');
+        $arangoRepository->getPost('post_id');
 
     }
 
@@ -218,16 +210,14 @@ class PostArangoRepositoryTest extends TestCase
     {
         $conn = $this->createDatabase();
         $arangoRepository = new PostArangoRepository($conn);
-        $userId = uniqid();
         $post = PostFixture::newPost();
-        $post->setCreator($userId);
 
         $post = $arangoRepository->createPost($post);
 
         $arangoRepository->deletePost($post->getId());
 
         try {
-            $arangoRepository->getPost($post->getId(), $post->getCreator());
+            $arangoRepository->getPost($post->getId());
         } catch (\Exception $e) {
             $this->assertTrue($e instanceof ResourceNotFoundError);
         }
@@ -256,14 +246,12 @@ class PostArangoRepositoryTest extends TestCase
     {
         $conn = $this->createDatabase();
         $arangoRepository = new PostArangoRepository($conn);
-        $userId = uniqid();
         $post = PostFixture::newPost();
-        $post->setCreator($userId);
 
         $post = $arangoRepository->createPost($post);
         $post->setTitle('updated title');
         $arangoRepository->updatePost($post);
-        $result = $arangoRepository->getPost($post->getId(), $post->getCreator());
+        $result = $arangoRepository->getPost($post->getId());
 
         $this->assertEqualsCanonicalizing($post, $result);
     }

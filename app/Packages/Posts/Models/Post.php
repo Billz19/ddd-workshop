@@ -5,6 +5,7 @@ namespace App\Packages\Posts\Models;
 use App\Library\JsonSchemaValidator\ModelJsonSchemaValidatorTrait;
 use App\Library\Serialize\ArraySerializableInterface;
 use App\Library\Serialize\ArraySerializableTrait;
+use Carbon\Carbon;
 
 class Post implements  ArraySerializableInterface, \JsonSerializable
 {
@@ -18,7 +19,8 @@ class Post implements  ArraySerializableInterface, \JsonSerializable
     private string $title;
     private string $content;
     private string $imageUrl;
-    private string $creator;
+    private string $createdAt;
+    private string $updatedAt;
 
     /**
      * @return string
@@ -87,17 +89,35 @@ class Post implements  ArraySerializableInterface, \JsonSerializable
     /**
      * @return string
      */
-    public function getCreator(): string
+    public function getCreatedAt(): string
     {
-        return $this->creator;
+        return $this->createdAt;
     }
 
     /**
-     * @param string $creator
+     * @param string $createdAt
      */
-    public function setCreator(string $creator): void
+    public function setCreatedAt(string $createdAt = null): void
     {
-        $this->creator = $creator;
+        $createdAt ??= Carbon::now()->toRfc3339String();
+        $this->createdAt = $createdAt;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUpdatedAt(): string
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param string $updatedAt
+     */
+    public function setUpdatedAt(string $updatedAt = null): void
+    {
+        $updatedAt ??= Carbon::now()->toRfc3339String();
+        $this->updatedAt = $updatedAt;
     }
 
 
