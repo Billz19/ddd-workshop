@@ -3,6 +3,8 @@
 
 namespace Tests\Helpers;
 
+use App\Packages\Posts\Repository\Arango\PostArangoRepository;
+use App\Packages\Posts\Repository\PostRepositoryInterface;
 use App\Packages\Users\Repository\Arango\UserArangoRepository;
 use App\Packages\Users\Repository\UserRepositoryInterface;
 use ArangoDBClient\Connection as ArangoConnection;
@@ -47,6 +49,18 @@ trait ArangoConnectionTrait
         app()->bind(
             UserRepositoryInterface::class,
             fn() => new UserArangoRepository($conn)
+        );
+    }
+
+    /**
+     * Bind repository with test database.
+     */
+    private function bindPostsRepository(): void
+    {
+        $conn = $this->createDatabase();
+        app()->bind(
+            PostRepositoryInterface::class,
+            fn() => new PostArangoRepository($conn)
         );
     }
 
