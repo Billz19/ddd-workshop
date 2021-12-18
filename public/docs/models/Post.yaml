@@ -1,0 +1,24 @@
+title: Post
+type: object
+x-tags:
+  - post
+properties:
+  id:
+    type: string
+  title:
+    type: string
+    minLength: 5
+    example: My first post
+  content:
+    type: string
+    minLength: 5
+  imageUrl:
+    type: string
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time
+required:
+  - title
