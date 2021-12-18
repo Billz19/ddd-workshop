@@ -86,12 +86,12 @@ class PostArangoRepository implements PostRepositoryInterface
         }
     }
 
-    public function getPost(string $postId, string $authUserId): Post
+    public function getPost(string $postId): Post
     {
         try {
             $query = "
                 FOR post IN @@posts
-                  FILTER post._key == @postId && post.creator == @authUserId
+                  FILTER post._key == @postId
                   RETURN {result: MERGE({id: post._key}, post)}
             ";
             $cursor = $this->executeQuery(
@@ -99,7 +99,6 @@ class PostArangoRepository implements PostRepositoryInterface
                 [
                     '@posts' => PostsCollection::COLLECTION,
                     'postId' => $postId,
-                    'authUserId' => $authUserId,
                 ]
             );
         } catch (\Exception $e) {
@@ -114,7 +113,7 @@ class PostArangoRepository implements PostRepositoryInterface
 
     }
 
-    public function getPosts(PostsQuery $postsQuery, string $authUserId): PostCollection
+    public function getPosts(PostsQuery $postsQuery): PostCollection
     {
         $query = "
             FOR post IN @@posts
@@ -140,22 +139,16 @@ class PostArangoRepository implements PostRepositoryInterface
         }
     }
 
-    public function getPostsCount(string $authUserId): int
+    public function getPostsCount(): int
     {
         try {
             $query = "
-                LET userPosts = (
-                    FOR post IN @@posts
-                      FILTER post.creator == @authUserId
-                      RETURN post
-                )
-                RETURN LENGTH(userPosts)
+                RETURN LENGTH(@@posts)
             ";
             return (int)$this->executeQuery(
                 $query,
                 [
                     '@posts' => PostsCollection::COLLECTION,
-                    'authUserId' => $authUserId,
                 ]
             )->current();
         } catch (\Exception $e) {

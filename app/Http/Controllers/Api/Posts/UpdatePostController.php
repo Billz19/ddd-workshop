@@ -26,6 +26,11 @@ class UpdatePostController extends Controller
         try {
             $post = Post::fromArray($request->all());
             $post->setId($postId);
+            if ($request->hasFile('image')) {
+                $imageFile = $request->file('image');
+                $file = $imageFile->move(public_path('/images'), $imageFile->getClientOriginalName());
+                $post->setImageUrl($file->getFilename());
+            }
             $result = $this->postService->updatePost($post);
             return response()->json($result, Response::HTTP_OK);
         } catch (ValidationError $e) {

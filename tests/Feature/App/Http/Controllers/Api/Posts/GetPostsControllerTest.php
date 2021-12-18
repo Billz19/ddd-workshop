@@ -58,13 +58,14 @@ class GetPostsControllerTest extends TestCase
      */
     public function testGetPostsThrowInternalServerError()
     {
-        $mockListsRepository = \Mockery::mock(PostArangoRepository::class);
-        $mockListsRepository
+        $mockPostsRepository = \Mockery::mock(PostArangoRepository::class);
+        $mockPostsRepository
             ->shouldReceive('getPostsCount')
             ->andReturn(3);
-        $mockListsRepository
+        $mockPostsRepository
             ->shouldReceive('getPosts')
             ->andThrow(UnknownDBErrorException::class);
+        $this->instance(PostArangoRepository::class, $mockPostsRepository);
 
         $response = $this->getJson(self::API_PREFIX_LINK . '?page=1&perPage=20');
         $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);

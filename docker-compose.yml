@@ -53,6 +53,8 @@ services:
             dockerfile: ./docker/php/Dockerfile
         volumes:
             - .:/var/www/html
+            # Enable xdebug
+            - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
         networks:
             - laravel-api
 

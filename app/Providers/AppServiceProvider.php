@@ -4,6 +4,7 @@ namespace App\Providers;
 
 
 use App\Library\ArangoDb\ArangoDbInitializerCollection;
+use App\Packages\Posts\Repository\Arango\PostArangoDbInitializer;
 use App\Packages\Users\Repository\Arango\UserArangoDbInitializer;
 use ArangoDBClient\Connection as ArangoConnection;
 use Illuminate\Support\Facades\Config;
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ArangoDbInitializerCollection::class, function () {
             return new ArangoDbInitializerCollection(
                 app()->make(UserArangoDbInitializer::class),
+                app()->make(PostArangoDbInitializer::class)
             );
         });
     }

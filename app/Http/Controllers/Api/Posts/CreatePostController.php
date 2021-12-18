@@ -25,9 +25,12 @@ class CreatePostController extends Controller
     public function __invoke(Request $request)
     {
         try {
-            $userId = auth()->user()->getId();
             $post = Post::fromArray($request->all());
-            $post->setCreator($userId);
+            if ($request->hasFile('image')) {
+                $imageFile = $request->file('image');
+                $file = $imageFile->move(public_path('/images'), $imageFile->getClientOriginalName());
+                $post->setImageUrl($file->getFilename());
+            }
             $result = $this->postService->createPost($post);
             return response()->json($result, Response::HTTP_CREATED);
         } catch (ResourceAlreadyExistsError $e) {

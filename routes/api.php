@@ -27,11 +27,15 @@ Route::prefix('v1')->group(function () {
     Route::group(['prefix' => 'auth'], function () {
         Route::post('register', RegisterController::class);
         Route::post('login', LoginController::class);
-
-        Route::group(['middleware' => ['auth:sanctum']], function () {
-            Route::post('logout', LogoutController::class);
-            Route::get('me', GetAuthenticatedUserController::class);
-        });
+        Route::post('logout', LogoutController::class);
+    });
+    // Post routes
+    Route::group(['prefix' => 'posts'], function () {
+        Route::post('/', CreatePostController::class);
+        Route::put('/{postId}', UpdatePostController::class);
+        Route::delete('/{postId}', DeletePostController::class);
+        Route::get('/', GetPostsController::class);
+        Route::get('/{postId}', GetPostController::class);
     });
     // Post routes
     Route::group(['prefix' => 'posts'], function () {

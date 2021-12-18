@@ -114,7 +114,7 @@ class PostServiceTest extends TestCase
             ->shouldReceive('getPosts')
             ->andReturn($postCollection);
 
-        $result = $this->postService->getPosts($postsQuery, 'authUserId');
+        $result = $this->postService->getPosts($postsQuery);
 
         $this->assertEqualsCanonicalizing($postCollection, $result);
     }
@@ -136,7 +136,7 @@ class PostServiceTest extends TestCase
             ->shouldReceive('getPosts')
             ->andThrow(UnknownDBErrorException::class);
 
-        $this->postService->getPosts($postsQuery, 'authUserId');
+        $this->postService->getPosts($postsQuery);
 
     }
 
@@ -147,14 +147,13 @@ class PostServiceTest extends TestCase
      */
     public function testGetPost()
     {
-        $userId = 'authUserId';
         $post = PostFixture::newPost(withId: true);
         $this->mockPostsRepository
             ->shouldReceive('getPost')
-            ->with($post->getId(), $userId)
+            ->with($post->getId())
             ->andReturn($post);
 
-        $result = $this->postService->getPost($post->getId(), $userId);
+        $result = $this->postService->getPost($post->getId());
 
         $this->assertEqualsCanonicalizing($post, $result);
     }
@@ -171,7 +170,7 @@ class PostServiceTest extends TestCase
             ->shouldReceive('getPost')
             ->andThrow(ResourceNotFoundError::class);
 
-        $this->postService->getPost('not_found_id', 'authUserId');
+        $this->postService->getPost('not_found_id');
     }
 
     /**
@@ -186,7 +185,7 @@ class PostServiceTest extends TestCase
             ->shouldReceive('getPost')
             ->andThrow(UnknownDBErrorException::class);
 
-        $this->postService->getPost('post_id', 'authUserId');
+        $this->postService->getPost('post_id');
     }
 
     /**
