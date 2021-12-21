@@ -7,8 +7,10 @@ use App\Packages\Exceptions\ResourceAlreadyExistsError;
 use App\Packages\Exceptions\ResourceNotFoundError;
 use App\Packages\Exceptions\UnknownDBErrorException;
 use App\Packages\Posts\PostService;
+use App\Packages\Posts\PostServiceInterface;
 use App\Packages\Posts\PostsQuery;
 use App\Packages\Posts\Repository\Arango\PostArangoRepository;
+use App\Packages\Posts\Repository\PostRepositoryInterface;
 use Mockery\MockInterface;
 use Tests\Data\Fixtures\PostFixture;
 use Tests\Helpers\ArangoConnectionTrait;
@@ -22,14 +24,14 @@ class PostServiceTest extends TestCase
     use ArangoConnectionTrait;
 
     private MockInterface $mockPostsRepository;
-    private PostService $postService;
+    private PostServiceInterface $postService;
 
     protected function setUp(): void
     {
         parent::setUp();
         static::cleanArangoDatabases();
 
-        $this->mockPostsRepository = \Mockery::mock(PostArangoRepository::class);
+        $this->mockPostsRepository = \Mockery::mock(PostRepositoryInterface::class);
         $this->postService = new PostService($this->mockPostsRepository);
     }
 

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\Auth\GetAuthenticatedUserController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;

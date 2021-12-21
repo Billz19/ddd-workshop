@@ -7,6 +7,7 @@ use App\Http\Exceptions\InternalServerError;
 use App\Packages\Exceptions\InvalidArgumentError;
 use App\Packages\Exceptions\ResourceNotFoundError;
 use App\Packages\Posts\PostService;
+use App\Packages\Posts\PostServiceInterface;
 use App\Packages\Posts\PostsQuery;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class GetPostsController extends Controller
 {
 
     public function __construct(
-        private PostService $postService,
+        private PostServiceInterface $postService,
     )
     {
     }

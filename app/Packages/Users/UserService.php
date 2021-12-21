@@ -5,6 +5,7 @@ namespace App\Packages\Users;
 
 use App\Packages\Users\Models\User;
 use App\Packages\Users\Repository\Arango\UserArangoRepository;
+use App\Packages\Users\Repository\UserRepositoryInterface;
 
 /**
  * The default UserServiceInterface implementation.
@@ -12,7 +13,7 @@ use App\Packages\Users\Repository\Arango\UserArangoRepository;
 class UserService implements UserServiceInterface
 {
     function __construct(
-        private UserArangoRepository $userRepository,
+        private UserRepositoryInterface $userRepository,
     )
     {
     }

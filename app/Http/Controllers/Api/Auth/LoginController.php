@@ -9,6 +9,7 @@ use App\Http\Requests\UserLoginRequest;
 use App\Packages\Exceptions\InvalidArgumentError;
 use App\Packages\Exceptions\ResourceNotFoundError;
 use App\Packages\Users\UserService;
+use App\Packages\Users\UserServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -16,7 +17,7 @@ class LoginController extends Controller
 {
 
     public function __construct(
-        private UserService $userService,
+        private UserServiceInterface $userService,
     )
     {
     }
@@ -41,6 +42,7 @@ class LoginController extends Controller
             return response()->json(['token' => auth()->user()->createToken('API Token')->plainTextToken],Response::HTTP_OK);
 
         } catch (ResourceNotFoundError | InvalidArgumentError $e) {
+            dd($e);
             throw new UnauthorizedError($e->getMessage(), $e);
         } catch (\Exception $e) {
             throw new InternalServerError($e->getMessage(), $e);

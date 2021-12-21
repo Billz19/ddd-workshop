@@ -7,6 +7,7 @@ namespace App\Packages\Posts;
 use App\Packages\Posts\Models\Post;
 use App\Packages\Posts\Models\PostCollection;
 use App\Packages\Posts\Repository\Arango\PostArangoRepository;
+use App\Packages\Posts\Repository\PostRepositoryInterface;
 
 /**
  * The default PostServiceInterface implementation.
@@ -14,7 +15,7 @@ use App\Packages\Posts\Repository\Arango\PostArangoRepository;
 class PostService implements PostServiceInterface
 {
     public function __construct(
-        private PostArangoRepository $postRepository
+        private PostRepositoryInterface $postRepository
     )
     {
     }

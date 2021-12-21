@@ -9,6 +9,7 @@ use App\Http\Requests\UserRegisterRequest;
 use App\Packages\Exceptions\ResourceAlreadyExistsError;
 use App\Packages\Users\Models\User;
 use App\Packages\Users\UserService;
+use App\Packages\Users\UserServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -16,7 +17,7 @@ class RegisterController extends Controller
 {
 
     public function __construct(
-        private UserService $userService,
+        private UserServiceInterface $userService,
     )
     {
     }

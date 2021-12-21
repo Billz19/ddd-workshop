@@ -7,13 +7,14 @@ use App\Http\Exceptions\InternalServerError;
 use App\Http\Exceptions\NotFoundError;
 use App\Packages\Exceptions\ResourceNotFoundError;
 use App\Packages\Posts\PostService;
+use App\Packages\Posts\PostServiceInterface;
 use Illuminate\Http\Response;
 
 class GetPostController extends Controller
 {
 
     public function __construct(
-        private PostService $postService,
+        private PostServiceInterface $postService,
     )
     {
     }
