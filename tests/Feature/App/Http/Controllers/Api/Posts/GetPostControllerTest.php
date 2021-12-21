@@ -5,6 +5,7 @@ namespace Tests\Feature\App\Http\Controllers\Api\Posts;
 use App\Packages\Exceptions\ResourceNotFoundError;
 use App\Packages\Exceptions\UnknownDBErrorException;
 use App\Packages\Posts\Repository\Arango\PostArangoRepository;
+use App\Packages\Posts\Repository\PostRepositoryInterface;
 use App\Packages\Users\Models\User;
 use Illuminate\Http\Response;
 use Laravel\Sanctum\Sanctum;
@@ -45,7 +46,7 @@ class GetPostControllerTest extends TestCase
     public function testGetPost()
     {
         $post = PostFixture::newPost(withId: true);
-        $this->mockAndBindRepository(['getPost' => $post], PostArangoRepository::class);
+        $this->mockAndBindRepository(['getPost' => $post], PostRepositoryInterface::class);
         $response = $this->getJson(self::API_PREFIX_LINK . "/{$post->getId()}");
         $response->assertOk();
         $response->assertJson($post->toArray());
@@ -58,7 +59,7 @@ class GetPostControllerTest extends TestCase
      */
     public function tesGetPostThrowResourceNotFound()
     {
-        $this->triggerRepositoryException('getPost', ResourceNotFoundError::class, PostArangoRepository::class);
+        $this->triggerRepositoryException('getPost', ResourceNotFoundError::class, PostRepositoryInterface::class);
         $response = $this->getJson(self::API_PREFIX_LINK . '/not_found_post');
         $response->assertNotFound();
     }
@@ -70,7 +71,7 @@ class GetPostControllerTest extends TestCase
      */
     public function tesGetPostThrowInternalServerError()
     {
-        $this->triggerRepositoryException('getPost', UnknownDBErrorException::class, PostArangoRepository::class);
+        $this->triggerRepositoryException('getPost', UnknownDBErrorException::class, PostRepositoryInterface::class);
         $response = $this->getJson(self::API_PREFIX_LINK . '/post_id');
         $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
     }

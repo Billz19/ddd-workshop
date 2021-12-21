@@ -9,6 +9,7 @@ use App\Library\JsonSchemaValidator\ValidationError;
 use App\Packages\Exceptions\ResourceAlreadyExistsError;
 use App\Packages\Posts\Models\Post;
 use App\Packages\Posts\PostService;
+use App\Packages\Posts\PostServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -16,7 +17,7 @@ class CreatePostController extends Controller
 {
 
     public function __construct(
-        private PostService $postService,
+        private PostServiceInterface $postService,
     )
     {
     }

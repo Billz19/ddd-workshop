@@ -7,6 +7,7 @@ use App\Http\Exceptions\InternalServerError;
 use App\Packages\Exceptions\ResourceAlreadyExistsError;
 use App\Packages\Exceptions\UnknownDBErrorException;
 use App\Packages\Posts\Repository\Arango\PostArangoRepository;
+use App\Packages\Posts\Repository\PostRepositoryInterface;
 use App\Packages\Users\Models\User;
 use Illuminate\Http\Response;
 use Laravel\Sanctum\Sanctum;
@@ -47,7 +48,7 @@ class UpdatePostControllerTest extends TestCase
     public function testUpdate()
     {
         $post = PostFixture::newPost(withId: true);
-        $this->mockAndBindRepository(['updatePost' => $post], PostArangoRepository::class);
+        $this->mockAndBindRepository(['updatePost' => $post], PostRepositoryInterface::class);
         $response = $this->putJson(self::API_PREFIX_LINK . '/'. $post->getId(), $post->toArray());
         $response->assertOk();
         $response->assertJson($post->toArray());
@@ -73,7 +74,7 @@ class UpdatePostControllerTest extends TestCase
      */
     public function testUpdateThrowInternalServerError()
     {
-        $this->triggerRepositoryException('updatePost', UnknownDBErrorException::class, PostArangoRepository::class);
+        $this->triggerRepositoryException('updatePost', UnknownDBErrorException::class, PostRepositoryInterface::class);
         $post = PostFixture::newPost();
         $response = $this->putJson(self::API_PREFIX_LINK . '/post_id', $post->toArray());
         $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);

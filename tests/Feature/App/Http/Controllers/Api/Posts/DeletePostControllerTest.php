@@ -4,6 +4,7 @@ namespace Tests\Feature\App\Http\Controllers\Api\Posts;
 
 use App\Packages\Exceptions\UnknownDBErrorException;
 use App\Packages\Posts\Repository\Arango\PostArangoRepository;
+use App\Packages\Posts\Repository\PostRepositoryInterface;
 use App\Packages\Users\Models\User;
 use Illuminate\Http\Response;
 use Laravel\Sanctum\Sanctum;
@@ -42,7 +43,7 @@ class DeletePostControllerTest extends TestCase
      */
     public function testDeletePost()
     {
-        $this->mockAndBindRepository(['deletePost' => null], PostArangoRepository::class);
+        $this->mockAndBindRepository(['deletePost' => null], PostRepositoryInterface::class);
         $response = $this->deleteJson(self::API_PREFIX_LINK . "/post_id");
         $response->assertStatus(Response::HTTP_NO_CONTENT);
     }
@@ -55,7 +56,7 @@ class DeletePostControllerTest extends TestCase
      */
     public function testDeletePostThrowsInternalServerError()
     {
-        $this->triggerRepositoryException('getPost', UnknownDBErrorException::class, PostArangoRepository::class);
+        $this->triggerRepositoryException('getPost', UnknownDBErrorException::class, PostRepositoryInterface::class);
         $response = $this->deleteJson(self::API_PREFIX_LINK . '/post_id');
         $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
     }

@@ -37,7 +37,7 @@ trait MockingTrait
      */
     private function mockAndBindRepository(
         array $receiveReturn = [],
-        string $repository = UserArangoRepository   ::class
+        string $repository = UserRepositoryInterface::class
     ): MockInterface {
         $mockListsRepository      = \Mockery::mock($repository);
         foreach ($receiveReturn as $method => $return) {

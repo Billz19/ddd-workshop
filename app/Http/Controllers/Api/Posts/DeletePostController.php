@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Api\Posts;
 use App\Http\Controllers\Controller;
 use App\Http\Exceptions\InternalServerError;
 use App\Packages\Posts\PostService;
+use App\Packages\Posts\PostServiceInterface;
 use Illuminate\Http\Response;
 
 class DeletePostController extends Controller
 {
 
     public function __construct(
-        private PostService $postService,
+        private PostServiceInterface $postService,
     )
     {
     }

@@ -7,6 +7,7 @@ use App\Http\Exceptions\InternalServerError;
 use App\Packages\Exceptions\ResourceAlreadyExistsError;
 use App\Packages\Exceptions\UnknownDBErrorException;
 use App\Packages\Posts\Repository\Arango\PostArangoRepository;
+use App\Packages\Posts\Repository\PostRepositoryInterface;
 use App\Packages\Users\Models\User;
 use Illuminate\Http\Response;
 use Laravel\Sanctum\Sanctum;
@@ -35,7 +36,7 @@ class CreatePostControllerTest extends TestCase
         parent::setUp();
 
         // handle sanctum auth
-        $this->auth_user = Sanctum::actingAs(UserFixture::newUser(withId: true), ['*']);
+        Sanctum::actingAs(UserFixture::newUser(withId: true), ['*']);
         $this->bindPostsRepository();
     }
 
@@ -47,7 +48,7 @@ class CreatePostControllerTest extends TestCase
     public function testCreate()
     {
         $post = PostFixture::newPost();
-        $this->mockAndBindRepository(['createPost' => $post], PostArangoRepository::class);
+        $this->mockAndBindRepository(['createPost' => $post], PostRepositoryInterface::class);
         $response = $this->postJson(self::API_PREFIX_LINK, $post->toArray());
         $response->assertCreated();
         $response->assertJson($post->toArray());
@@ -73,7 +74,7 @@ class CreatePostControllerTest extends TestCase
      */
     public function testCreateThrowBadRequestDueResourceExistsAlready()
     {
-        $this->triggerRepositoryException('createPost', ResourceAlreadyExistsError::class, PostArangoRepository::class);
+        $this->triggerRepositoryException('createPost', ResourceAlreadyExistsError::class, PostRepositoryInterface::class);
         $post = PostFixture::newPost();
         $response = $this->postJson(self::API_PREFIX_LINK, $post->toArray());
         $response->assertStatus(Response::HTTP_BAD_REQUEST);
@@ -86,7 +87,7 @@ class CreatePostControllerTest extends TestCase
      */
     public function testCreateThrowInternalServerError()
     {
-        $this->triggerRepositoryException('createPost', UnknownDBErrorException::class, PostArangoRepository::class);
+        $this->triggerRepositoryException('createPost', UnknownDBErrorException::class, PostRepositoryInterface::class);
         $post = PostFixture::newPost();
         $response = $this->postJson(self::API_PREFIX_LINK, $post->toArray());
         $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);

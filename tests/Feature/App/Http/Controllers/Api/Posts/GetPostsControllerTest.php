@@ -4,6 +4,7 @@ namespace Tests\Feature\App\Http\Controllers\Api\Posts;
 
 use App\Packages\Exceptions\UnknownDBErrorException;
 use App\Packages\Posts\Repository\Arango\PostArangoRepository;
+use App\Packages\Posts\Repository\PostRepositoryInterface;
 use App\Packages\Users\Models\User;
 use Illuminate\Http\Response;
 use Laravel\Sanctum\Sanctum;
@@ -45,7 +46,7 @@ class GetPostsControllerTest extends TestCase
     {
         $count = 3;
         $posts = PostFixture::newPostCollection($count);
-        $this->mockAndBindRepository(['getPostsCount' => $count, 'getPosts' => $posts], PostArangoRepository::class);
+        $this->mockAndBindRepository(['getPostsCount' => $count, 'getPosts' => $posts], PostRepositoryInterface::class);
         $response = $this->getJson(self::API_PREFIX_LINK . '?page=1&perPage=20');
         $response->assertOk();
         $response->assertJson($posts->toArray());
@@ -58,14 +59,14 @@ class GetPostsControllerTest extends TestCase
      */
     public function testGetPostsThrowInternalServerError()
     {
-        $mockPostsRepository = \Mockery::mock(PostArangoRepository::class);
+        $mockPostsRepository = \Mockery::mock(PostRepositoryInterface::class);
         $mockPostsRepository
             ->shouldReceive('getPostsCount')
             ->andReturn(3);
         $mockPostsRepository
             ->shouldReceive('getPosts')
             ->andThrow(UnknownDBErrorException::class);
-        $this->instance(PostArangoRepository::class, $mockPostsRepository);
+        $this->instance(PostRepositoryInterface::class, $mockPostsRepository);
 
         $response = $this->getJson(self::API_PREFIX_LINK . '?page=1&perPage=20');
         $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
